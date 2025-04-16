@@ -10,14 +10,31 @@ import (
 	"syscall"
 	"time"
 
-    "github.com/gin-gonic/gin"
-    "github.com/xenakil/cheddartrack/internal/config" 
+	"github.com/gin-gonic/gin"
+	"github.com/xenakil/cheddartrack/internal/config"
+	"github.com/xenakil/cheddartrack/internal/db"
+	"github.com/xenakil/cheddartrack/internal/handler"
+	"github.com/xenakil/cheddartrack/internal/repository"
+	"github.com/xenakil/cheddartrack/internal/service"
+    ginSwagger "github.com/swaggo/gin-swagger"
+    swaggerFiles "github.com/swaggo/files"
+    _ "github.com/xenakil/cheddartrack/docs"
 )
 
 func main() {
 	cfg := config.LoadConfig()
 
+	// Connecting to database
+	db.Init(cfg)
+
 	r := gin.Default()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+
+	txnRepo := repository.NewTransactionRepository(db.DB)
+	txnSvc := service.NewTransactionService(txnRepo)
+	txnHandler := handler.NewTransactionHanlder(txnSvc)
+	txnHandler.RegisterRouter(r)
 	
 	r.GET("/health", func(c *gin.Context){
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "env": cfg.Env})

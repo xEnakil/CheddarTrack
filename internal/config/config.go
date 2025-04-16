@@ -12,7 +12,7 @@ type Config struct {
 	Port string
 	Env string
 	DBHost string
-	DBPort string
+	DBPort int
 	DBUser string
 	DBPassword string
 	DBName string
@@ -31,14 +31,13 @@ func LoadConfig() *Config {
     if err != nil {
         log.Fatalf("Invalid DB_PORT: %v", err)
     }
-	dbPortStr := strconv.Itoa(dbPort)
 
 
 	return &Config{
 		Port: getEnv("PORT", "8080"),
 		Env: getEnv("ENV", "development"),
 		DBHost: getEnv("DB_HOST", "localhost"),
-		DBPort: dbPortStr,
+		DBPort: dbPort,
 		DBUser: getEnv("DB_USER", ""),
 		DBPassword: getEnv("DB_PASSWORD", ""),
 		DBName: getEnv("DB_NAME", ""),
