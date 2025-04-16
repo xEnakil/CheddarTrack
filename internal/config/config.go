@@ -18,6 +18,7 @@ type Config struct {
 	DBName string
 	BaseCurrency string
     CurrencyAPIURL string
+	JWTSecret string
 }
 
 func LoadConfig() *Config {

@@ -35,6 +35,11 @@ func main() {
 	txnSvc := service.NewTransactionService(txnRepo)
 	txnHandler := handler.NewTransactionHanlder(txnSvc)
 	txnHandler.RegisterRouter(r)
+// After db.Init(cfg)
+userService := service.NewUserService(db.DB, cfg.JWTSecret)
+authHandler := handler.NewAuthHandler(userService)
+authHandler.RegisterRoutes(r)
+
 	
 	r.GET("/health", func(c *gin.Context){
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "env": cfg.Env})
