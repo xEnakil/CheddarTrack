@@ -23,7 +23,7 @@ func (r *transactionRepository) Create(transaction *model.Transaction) error {
 }
 
 func (r *transactionRepository) GetAllByUser(userID uint) ([]model.Transaction, error) {
-    var txns []model.Transaction
-    err := r.db.Preload("Category").Where("user_id = ?", userID).Find(&txns).Error
-    return txns, err
+	var txns []model.Transaction
+	err := r.db.Preload("Category").Where("user_id = ?", userID).Find(&txns).Error
+	return txns, err
 }

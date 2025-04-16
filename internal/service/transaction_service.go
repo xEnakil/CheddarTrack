@@ -1,8 +1,8 @@
 package service
 
 import (
-    "github.com/xenakil/cheddartrack/internal/model"
-    "github.com/xenakil/cheddartrack/internal/repository"
+	"github.com/xenakil/cheddartrack/internal/model"
+	"github.com/xenakil/cheddartrack/internal/repository"
 )
 
 type TransactionService interface {
@@ -20,14 +20,14 @@ func NewTransactionService(r repository.TransactionRepository) TransactionServic
 
 func (s *transactionService) Create(input model.CreateTransactionInput) error {
 	txn := &model.Transaction{
-		UserID: input.UserId,
-		CategoryID: input.CategoryID,
-		Amount: input.Amount,
-		Currency: input.Currency,
+		UserID:      input.UserId,
+		CategoryID:  input.CategoryID,
+		Amount:      input.Amount,
+		Currency:    input.Currency,
 		Description: input.Description,
-		Timestamp: input.Timestamp,
+		Timestamp:   input.Timestamp,
 	}
-	
+
 	return s.repo.Create(txn)
 }
 
@@ -40,16 +40,15 @@ func (s *transactionService) GetAll(userID uint) ([]model.TransactionResponse, e
 	var res []model.TransactionResponse
 	for _, t := range txns {
 		res = append(res, model.TransactionResponse{
-			ID: t.ID,
-			Amount: t.Amount,
-			Currency: t.Currency,
+			ID:          t.ID,
+			Amount:      t.Amount,
+			Currency:    t.Currency,
 			Description: t.Description,
-			Timestamp: t.Timestamp,
-			Category: t.Category.Name,
-			Type: t.Category.Type,
+			Timestamp:   t.Timestamp,
+			Category:    t.Category.Name,
+			Type:        t.Category.Type,
 		})
 	}
 
 	return res, nil
 }
-

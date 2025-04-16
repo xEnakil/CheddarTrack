@@ -1,12 +1,12 @@
 package handler
 
 import (
-    "net/http"
-    "strconv"
+	"net/http"
+	"strconv"
 
-    "github.com/gin-gonic/gin"
-    "github.com/xenakil/cheddartrack/internal/model"
-    "github.com/xenakil/cheddartrack/internal/service"
+	"github.com/gin-gonic/gin"
+	"github.com/xenakil/cheddartrack/internal/model"
+	"github.com/xenakil/cheddartrack/internal/service"
 )
 
 type TransactionHandler struct {
@@ -18,7 +18,7 @@ func NewTransactionHanlder(s service.TransactionService) *TransactionHandler {
 }
 
 func (h *TransactionHandler) RegisterRouter(r *gin.Engine) {
-	txns := r.Group("/transactions") 
+	txns := r.Group("/transactions")
 	{
 		txns.POST("", h.CreateTransaction)
 		txns.GET("/:user_id", h.GetTransactionByUser)
@@ -45,7 +45,7 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message":"transaction created"})
+	c.JSON(http.StatusCreated, gin.H{"message": "transaction created"})
 }
 
 // GetTransactionByUser godoc
@@ -60,16 +60,15 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 func (h *TransactionHandler) GetTransactionByUser(c *gin.Context) {
 	uid, err := strconv.Atoi(c.Param("user_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error":"invalid user_id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user_id"})
 		return
 	}
 
 	txns, err := h.svc.GetAll(uint(uid))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, txns)
 }
-

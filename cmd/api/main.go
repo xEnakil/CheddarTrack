@@ -11,14 +11,14 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/xenakil/cheddartrack/docs"
 	"github.com/xenakil/cheddartrack/internal/config"
 	"github.com/xenakil/cheddartrack/internal/db"
 	"github.com/xenakil/cheddartrack/internal/handler"
 	"github.com/xenakil/cheddartrack/internal/repository"
 	"github.com/xenakil/cheddartrack/internal/service"
-    ginSwagger "github.com/swaggo/gin-swagger"
-    swaggerFiles "github.com/swaggo/files"
-    _ "github.com/xenakil/cheddartrack/docs"
 )
 
 func main() {
@@ -30,23 +30,21 @@ func main() {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-
 	txnRepo := repository.NewTransactionRepository(db.DB)
 	txnSvc := service.NewTransactionService(txnRepo)
 	txnHandler := handler.NewTransactionHanlder(txnSvc)
 	txnHandler.RegisterRouter(r)
-// After db.Init(cfg)
-userService := service.NewUserService(db.DB, cfg.JWTSecret)
-authHandler := handler.NewAuthHandler(userService)
-authHandler.RegisterRoutes(r)
+	// After db.Init(cfg)
+	userService := service.NewUserService(db.DB, cfg.JWTSecret)
+	authHandler := handler.NewAuthHandler(userService)
+	authHandler.RegisterRoutes(r)
 
-	
-	r.GET("/health", func(c *gin.Context){
+	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "env": cfg.Env})
 	})
 
 	srv := &http.Server{
-		Addr: ":" + cfg.Port,
+		Addr:    ":" + cfg.Port,
 		Handler: r,
 	}
 
@@ -55,18 +53,18 @@ authHandler.RegisterRoutes(r)
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-    fmt.Println("Server running on http://localhost:%s\n" + cfg.Port)
+	fmt.Println("Server running on http://localhost:%s\n" + cfg.Port)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-    fmt.Println("Shutting down server...")
+	fmt.Println("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-        log.Fatal("Server forced to shutdown:", err)
+		log.Fatal("Server forced to shutdown:", err)
 	}
 
-    fmt.Println("Server exiting")
+	fmt.Println("Server exiting")
 }
